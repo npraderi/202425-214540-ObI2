@@ -1,0 +1,127 @@
+version: "3.8"
+
+services:
+
+  auth-user:
+    build: ./AuthUser
+    env_file:
+       - .env 
+    environment:
+      MONGO_URL: ${MONGO_URL_AU}
+      JWT_SECRET: ${JWT_SECRET}
+      API_PORT: ${API_PORT_AU}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      - db-auth-user
+      - redis
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    volumes:
+      - ./AuthUser:/usr/src
+      - ./AuthUser/node_modules:/usr/src/node_modules
+    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+
+  db-auth-user:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27017:27017 #Usar docker-compose-override para mapear externamente o multistage
+    volumes:
+      # ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+      - './volumes/db-auth-user:/data/db'
+  
+  expenses-incomes:
+    build: ./ExpensesIncomes
+    env_file:
+        - .env 
+    environment:
+      MONGO_URL: ${MONGO_URL_EI}
+      JWT_SECRET: ${JWT_SECRET}
+      API_PORT: ${API_PORT_EI}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      - db-expenses-incomes
+      - redis
+      - rabbitmq
+    ports:
+      - "3001:3001"
+    restart: on-failure
+    volumes:
+      - ./ExpensesIncomes:/usr/src
+      - ./ExpensesIncomes/node_modules:/usr/src/node_modules
+    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+
+  db-expenses-incomes:
+    image: mongo
+    command: mongod --port 27018
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27018:27018 #Usar docker-compose-override para mapear externamente o multistage
+    volumes:
+      #- ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+      - './volumes/db-expenses-incomes:/data/db'
+
+  mailer:
+    build: ./Mailer
+    env_file:
+       - .env 
+    depends_on:
+      - rabbitmq
+    restart: on-failure
+    volumes:
+      - ./Mailer:/usr/src
+      - ./Mailer/node_modules:/usr/src/node_modules
+    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+
+  new-relic:
+    container_name: newrelic-infra
+    image: newrelic/infrastructure:latest
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      NRIA_LICENSE_KEY: 3be6b837dc7815c3f1c71ead94f345a30402NRAL
+    restart: unless-stopped
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis/data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+        - 5672:5672
+        - 8080:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      
+
+ 
+    

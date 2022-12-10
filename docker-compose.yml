@@ -115,9 +115,12 @@ services:
   rabbitmq:
     image: rabbitmq:3.8.25-management-alpine
     container_name: 'rabbitmq'
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
     ports:
         - 5672:5672
-        - 8080:15672
+        - 15672:15672
     volumes:
         - ./rabbitmq/data/:/var/lib/rabbitmq/
         - ./rabbitmq/log/:/var/log/rabbitmq/

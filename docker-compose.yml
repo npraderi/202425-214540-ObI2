@@ -23,7 +23,8 @@ services:
     volumes:
       - ./AuthUser:/usr/src
       - ./AuthUser/node_modules:/usr/src/node_modules
-    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    #command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    command: bash -c "npm rebuild bcrypt --build-from-source && node api/index.js"
 
   db-auth-user:
     image: mongo
@@ -59,7 +60,8 @@ services:
     volumes:
       - ./ExpensesIncomes:/usr/src
       - ./ExpensesIncomes/node_modules:/usr/src/node_modules
-    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    #command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    command: bash -c "npm rebuild bcrypt --build-from-source && node api/index.js"
 
   db-expenses-incomes:
     image: mongo
@@ -85,7 +87,8 @@ services:
     volumes:
       - ./Mailer:/usr/src
       - ./Mailer/node_modules:/usr/src/node_modules
-    command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    #command: bash -c "npm rebuild bcrypt --build-from-source && npx nodemon --legacy-watch api/index.js"
+    command: bash -c "npm rebuild bcrypt --build-from-source && node index.js"
 
   new-relic:
     container_name: newrelic-infra

@@ -4,13 +4,15 @@ const user = require('./components/user/network');
 const auth = require('./components/auth/network');
 const family = require('./components/family');
 const errors = require('../network/errors'); 
+const cors = require('cors')
 
 function appRoutes(injectedOptions) {
 
     options = injectedOptions;
 
     const app = express(); 
-
+    
+    app.use(cors());
     app.use(bodyParser.json());
 
     //ROUTER

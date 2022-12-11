@@ -4,6 +4,7 @@ const category = require('./components/category/network');
 const expense = require('./components/expense/network');
 const errors = require('../network/errors'); 
 const income = require('./components/income/network');
+const cors = require('cors')
 
 function appRoutes(injectedOptions) {
 
@@ -11,6 +12,7 @@ function appRoutes(injectedOptions) {
 
     const app = express(); 
 
+    app.use(cors());
     app.use(bodyParser.json());
 
     //ROUTER

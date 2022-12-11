@@ -16,6 +16,7 @@
   "dependencies": {
     "amqplib": "^0.10.3",
     "async-redis": "^2.0.0",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.3",

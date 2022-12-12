@@ -39,8 +39,9 @@ module.exports = function (injectedStore,injectedQueue) {
         }        
 
         isUserValid = await userIsValidForRegistry(user)===true;
+        ValidPassword = body.password > 8;
 
-        if(isUserValid){            
+        if(isUserValid&&ValidPassword){            
 
             newFamily = await family.createFamilyWithOwner(user);
 
@@ -66,7 +67,13 @@ module.exports = function (injectedStore,injectedQueue) {
 
         }else{
 
-            throw error('Invalid user parameters, some already exists in database', 409);
+            if(!ValidPassword){
+                throw error('Invalid password, it has to be larger or equal than 8 characters', 409);
+            }else{
+                throw error('Invalid user parameters, some already exists in database', 409);
+            }
+
+            
 
         }
     }
@@ -173,7 +180,7 @@ module.exports = function (injectedStore,injectedQueue) {
         familyNameExists = await store.findByKey('family','familyName',user.familyName);
         ValidFamilyName = user.familyName.length > 2;
         ValidUserName = user.email.length > 0;
-
+        
         isValidForRegister = !familyNameExists&&!authExists&&!emailExists&&ValidFamilyName&&ValidUserName
 
         return isValidForRegister;

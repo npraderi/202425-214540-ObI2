@@ -39,7 +39,7 @@ module.exports = function (injectedStore,injectedQueue) {
         }        
 
         isUserValid = await userIsValidForRegistry(user)===true;
-        ValidPassword = body.password > 8;
+        ValidPassword = body.password.length > 8;
 
         if(isUserValid&&ValidPassword){            
 

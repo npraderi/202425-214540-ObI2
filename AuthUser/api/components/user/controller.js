@@ -70,7 +70,7 @@ module.exports = function (injectedStore,injectedQueue) {
             if(!ValidPassword){
                 throw error('Invalid password, it has to be larger or equal than 8 characters', 409);
             }else{
-                throw error('Invalid user parameters, some already exists in database', 409);
+                throw error('Invalid user parameters, they already exists in database', 409);
             }
 
             
